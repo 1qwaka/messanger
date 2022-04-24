@@ -48,17 +48,32 @@
 **
 ****************************************************************************/
 
-#include <QApplication>
+#ifndef CHATDIALOG_H
+#define CHATDIALOG_H
 
-#include "chatdialog.h"
+#include "ui_chatdialog.h"
+#include "client.h"
 
-#include <QtCore/QSettings>
-
-int main(int argc, char *argv[])
+class ChatDialog : public QDialog, private Ui::ChatDialog
 {
-    QApplication app(argc, argv);
+    Q_OBJECT
 
-    ChatDialog dialog;
-    dialog.show();
-    return app.exec();
-}
+public:
+    ChatDialog(QWidget *parent = nullptr);
+
+public slots:
+    void appendMessage(const QString &from, const QString &message);
+
+private slots:
+    void returnPressed();
+    void newParticipant(const QString &nick);
+    void participantLeft(const QString &nick);
+    void showInformation();
+
+private:
+    Client client;
+    QString myNickName;
+    QTextTableFormat tableFormat;
+};
+
+#endif

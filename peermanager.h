@@ -48,17 +48,47 @@
 **
 ****************************************************************************/
 
-#include <QApplication>
+#ifndef PEERMANAGER_H
+#define PEERMANAGER_H
 
-#include "chatdialog.h"
+#include <QByteArray>
+#include <QList>
+#include <QObject>
+#include <QTimer>
+#include <QUdpSocket>
 
-#include <QtCore/QSettings>
+class Client;
+class Connection;
 
-int main(int argc, char *argv[])
+class PeerManager : public QObject
 {
-    QApplication app(argc, argv);
+    Q_OBJECT
 
-    ChatDialog dialog;
-    dialog.show();
-    return app.exec();
-}
+public:
+    PeerManager(Client *client);
+
+    void setServerPort(int port);
+    QString userName() const;
+    void startBroadcasting();
+    bool isLocalHostAddress(const QHostAddress &address) const;
+
+signals:
+    void newConnection(Connection *connection);
+
+private slots:
+    void sendBroadcastDatagram();
+    void readBroadcastDatagram();
+
+private:
+    void updateAddresses();
+
+    Client *client;
+    QList<QHostAddress> broadcastAddresses;
+    QList<QHostAddress> ipAddresses;
+    QUdpSocket broadcastSocket;
+    QTimer broadcastTimer;
+    QString username;
+    int serverPort;
+};
+
+#endif

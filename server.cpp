@@ -48,17 +48,19 @@
 **
 ****************************************************************************/
 
-#include <QApplication>
+#include <QtNetwork>
 
-#include "chatdialog.h"
+#include "connection.h"
+#include "server.h"
 
-#include <QtCore/QSettings>
-
-int main(int argc, char *argv[])
+Server::Server(QObject *parent)
+    : QTcpServer(parent)
 {
-    QApplication app(argc, argv);
+    listen(QHostAddress::Any);
+}
 
-    ChatDialog dialog;
-    dialog.show();
-    return app.exec();
+void Server::incomingConnection(qintptr socketDescriptor)
+{
+    Connection *connection = new Connection(socketDescriptor, this);
+    emit newConnection(connection);
 }

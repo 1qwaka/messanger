@@ -48,17 +48,25 @@
 **
 ****************************************************************************/
 
-#include <QApplication>
+#ifndef SERVER_H
+#define SERVER_H
 
-#include "chatdialog.h"
+#include <QTcpServer>
 
-#include <QtCore/QSettings>
+class Connection;
 
-int main(int argc, char *argv[])
+class Server : public QTcpServer
 {
-    QApplication app(argc, argv);
+    Q_OBJECT
 
-    ChatDialog dialog;
-    dialog.show();
-    return app.exec();
-}
+public:
+    Server(QObject *parent = nullptr);
+
+signals:
+    void newConnection(Connection *connection);
+
+protected:
+    void incomingConnection(qintptr socketDescriptor) override;
+};
+
+#endif
